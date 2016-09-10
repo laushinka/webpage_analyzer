@@ -10,7 +10,7 @@ Webpage Analyzer accepts a URL input and outputs the following details:
 * Number of broken links
 * Existence of login/signup form
 
-### Start
+### Install dependencies
 ```
 npm install
 ```
