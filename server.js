@@ -2,6 +2,7 @@ var express     = require('express');
 var app         = express();
 var bodyParser  = require('body-parser');
 var request     = require('request');
+var cheerio     = require('cheerio');
 var port        = 2016;
 
 var data = {
