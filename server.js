@@ -1,12 +1,13 @@
-var express = require('express');
-var app     = express();
-var port    = 3000;
+var express     = require('express');
+var app         = express();
+var bodyParser  = require('body-parser');
+var port        = 2016;
 
 // Express requires a view engine
 app.set('view engine', 'ejs');
 
 app.get('/', function(req, res){
-  console.log(__dirname);
+  // console.log(__dirname);
   res.render(__dirname + '/views/index');
 })
 
