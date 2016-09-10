@@ -4,6 +4,10 @@ var bodyParser  = require('body-parser');
 var request     = require('request');
 var port        = 2016;
 
+var data = {
+  doctype: ''
+}
+
 // Express requires a view engine
 app.set('view engine', 'ejs');
 
@@ -14,8 +18,7 @@ app.use(bodyParser.urlencoded(
 app.use(bodyParser.json());
 
 app.get('/', function(req, res){
-  // console.log(__dirname);
-  res.render(__dirname + '/views/index');
+  res.render(__dirname + '/views/index', { data: {} });
 })
 
 // All user input is stored in the body property of the request object
@@ -25,10 +28,13 @@ app.post('/', function(req, res){
       res.send('Please enter correct URL');
     } else {
       var html = body.toLowerCase();
-      // console.log(html);
       var doctypes = html.match(/<!doctype html(.*?)>/);
+      console.log(doctypes);
+      if (doctypes && doctypes[0] == '<!doctype html>') {
+        data.doctype = 'HTML 5.0';
+      }
     }
-  //   // res.render(__dirname + '/views/index')
+    res.render(__dirname + '/views/index', { data: data });
   })
 })
 
