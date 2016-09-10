@@ -7,8 +7,20 @@ var _           = require('lodash');
 var port        = 2016;
 
 var data = {
+  error_message: 'Please enter correct URL',
+  status_code: 200,
   doctype: '',
-  links_count: 0
+  title: '',
+  h1: 0,
+  h2: 0,
+  h3: 0,
+  h4: 0,
+  h5: 0,
+  h6: 0,
+  links_count: 0,
+  internal_links: 0,
+  external_links: null,
+  login_form: ''
 }
 
 // Express requires a view engine
@@ -28,13 +40,14 @@ app.get('/', function(req, res){
 app.post('/', function(req, res){
   request(req.body.url, function(error, response, body){
     if (error) {
-      res.send('Please enter correct URL');
+      data.status_code = response.statusCode;
+      res.render(__dirname + '/views/index', {data: data});
     } else {
 
       // HTML version
       var html = body.toLowerCase();
       var doctypes = html.match(/<!doctype html(.*?)>/);
-      console.log(doctypes);
+      // console.log(doctypes);
       if (doctypes && doctypes[0] == '<!doctype html>') {
         data.doctype = 'HTML 5.0';
       } else if (doctypes[0].search('html 4.01')) {
@@ -47,12 +60,37 @@ app.post('/', function(req, res){
         data.doctype = 'No HTML version found';
       }
 
-      // Number of links
       var $ = cheerio.load(html);
+
+      // Title
+      data.title = _.upperFirst($('title').text());
+
+      // Page headings
+      data.h1 = $('h1').length;
+      data.h2 = $('h2').length;
+      data.h3 = $('h3').length;
+      data.h4 = $('h4').length;
+      data.h5 = $('h5').length;
+      data.h6 = $('h6').length;
+
+      // Number of links
       data.links_count = $('a').length;
 
       // Number of internal links
-      // var internalLinks = _.filter()
+      // var internalLinks = _.filter($('a'), function(link){
+      //   // console.log(link.attribs.href);
+      //   var isInternal = link.attribs.href.indexOf('http') > 0 || link.attribs.href.indexOf('http') < 0 ? true : false;
+      //   console.log(link.attribs.href);
+      //   return isInternal;
+      // });
+      // data.internal_links = internalLinks.length;
+
+      // Number of external links
+
+      // Is there a login/signup form
+      if ($('form')) {
+        data.login = "Yes";
+      }
     }
     res.render(__dirname + '/views/index', { data: data });
   })
