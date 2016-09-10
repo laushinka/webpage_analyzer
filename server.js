@@ -4,6 +4,7 @@ var bodyParser  = require('body-parser');
 var request     = require('request');
 var cheerio     = require('cheerio');
 var _           = require('lodash');
+const url       = require('url');
 var port        = 2016;
 
 var data = {
@@ -19,7 +20,7 @@ var data = {
   h6: 0,
   links_count: 0,
   internal_links: 0,
-  external_links: null,
+  external_links: 0,
   login_form: ''
 }
 
@@ -39,6 +40,7 @@ app.get('/', function(req, res){
 // All user input is stored in the body property of the request object
 app.post('/', function(req, res){
   request(req.body.url, function(error, response, body){
+    console.log(req.body.url);
     if (error) {
       data.status_code = response.statusCode;
       res.render(__dirname + '/views/index', {data: data});
@@ -76,16 +78,53 @@ app.post('/', function(req, res){
       // Number of links
       data.links_count = $('a').length;
 
-      // Number of internal links
-      // var internalLinks = _.filter($('a'), function(link){
-      //   // console.log(link.attribs.href);
-      //   var isInternal = link.attribs.href.indexOf('http') > 0 || link.attribs.href.indexOf('http') < 0 ? true : false;
-      //   console.log(link.attribs.href);
-      //   return isInternal;
-      // });
-      // data.internal_links = internalLinks.length;
+      // External links
+      function isExternal(url_input){
+        // console.log(url_input.attribs.href, url.parse(url_input.attribs.href).hostname, 'Debugger \n');
 
-      // Number of external links
+        var href_hostname = url.parse(url_input.attribs.href).hostname;
+        console.log(href_hostname, 'Original hostname')
+        if (href_hostname !== null) {
+          href_hostname = href_hostname.split('.');
+          var href_length = href_hostname.length
+          if (href_length > 2) {
+            // 012345
+            href_hostname = href_hostname[href_length-2] + '.' +href_hostname[href_length-1]
+          } else {
+            href_hostname = href_hostname.join('.');
+          }
+        }
+        var user_hostname = url.parse(req.body.url).hostname;
+        if (user_hostname !== null) {
+          user_hostname = user_hostname.split('.');
+          var user_length = user_hostname.length
+          if (user_length > 2) {
+              user_hostname = user_hostname[user_length-2] + '.' +user_hostname[user_length-1]
+          } else {
+            user_hostname = user_hostname.join('.')
+          }
+        }
+
+        console.log(href_hostname)
+        console.log(user_hostname)
+        console.log(url_input.attribs.href)
+        console.log(req.body.url)
+        console.log(href_hostname != null )
+        console.log(href_hostname !== user_hostname )
+
+        return href_hostname !== null && href_hostname !== user_hostname;
+      }
+
+      // Number of internal and external links
+      var externalLinks = _.filter($('a'), function(link){
+        if (isExternal(link)) {
+          console.log('External link: ' + link);
+          data.external_links++;
+        } else {
+          console.log('Internal link: ' + link);
+          data.internal_links++;
+        }
+      })
 
       // Is there a login/signup form
       if ($('form')) {
