@@ -28,11 +28,42 @@
                 <td><%= data.doctype %></td>
               </tr>
               <tr>
+                <td>Title</td>
+                <td><%= data.title %></td>
+              </tr>
+              <tr>
+                <td>H1</td>
+                <td><%= data.h1 %></td>
+              </tr>
+              <tr>
+                <td>H2</td>
+                <td><%= data.h2 %></td>
+              </tr>
+              <tr>
+                <td>H3</td>
+                <td><%= data.h3 %></td>
+              </tr>
+              <tr>
                 <td>Total number of links</td>
                 <td><%= data.links_count %></td>
               </tr>
+              <tr>
+                <td>Number of internal links</td>
+                <td><%= data.internal_links %></td>
+              </tr>
+              <tr>
+                <td>Number of external links</td>
+                <td><%= data.external_links %></td>
+              </tr>
+              <tr>
+                <td>Login/signup form</td>
+                <td><%= data.login_form %></td>
+              </tr>
             </table>
-          <% } %>
+          <% } else {%>
+            <h3><%= data.error_message %></h3>
+            <h3><%= data.status_code %></h3>
+            <% } %>
         </div>
       </div>
     </div>
