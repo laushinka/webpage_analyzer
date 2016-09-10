@@ -22,7 +22,12 @@
       <div class="row">
         <div class="col-md-6">
           <% if(data) {%>
-            <%= data.doctype %>
+            <table class="table">
+              <tr>
+                <td>HTML version</td>
+                <td><%= data.doctype %></td>
+              </tr>
+            </table>
           <% } %>
         </div>
       </div>
