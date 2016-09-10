@@ -1,1 +1,21 @@
-# webpage_analyzer
+# Webpage Analyzer
+
+Webpage Analyzer accepts a URL input and outputs the following details:
+* HTML version
+* Page title
+* Number of headings and which heading level
+* Total number of links
+* Number of internal links
+* Number of external links
+* Number of broken links
+* Existence of login/signup form
+
+### Start
+```
+npm install
+```
+
+### Run
+```
+npm start
+```
