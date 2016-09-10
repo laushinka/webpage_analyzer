@@ -3,10 +3,12 @@ var app         = express();
 var bodyParser  = require('body-parser');
 var request     = require('request');
 var cheerio     = require('cheerio');
+var _           = require('lodash');
 var port        = 2016;
 
 var data = {
-  doctype: ''
+  doctype: '',
+  links_count: 0
 }
 
 // Express requires a view engine
@@ -28,6 +30,8 @@ app.post('/', function(req, res){
     if (error) {
       res.send('Please enter correct URL');
     } else {
+
+      // HTML version
       var html = body.toLowerCase();
       var doctypes = html.match(/<!doctype html(.*?)>/);
       console.log(doctypes);
@@ -42,6 +46,13 @@ app.post('/', function(req, res){
       } else {
         data.doctype = 'No HTML version found';
       }
+
+      // Number of links
+      var $ = cheerio.load(html);
+      data.links_count = $('a').length;
+
+      // Number of internal links
+      // var internalLinks = _.filter()
     }
     res.render(__dirname + '/views/index', { data: data });
   })
