@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/laushinka/webpage_analyzer/issues"
   },
-  "homepage": "https://github.com/laushinka/webpage_analyzer#readme"
+  "homepage": "https://github.com/laushinka/webpage_analyzer#readme",
+  "dependencies": {
+    "express": "^4.14.0"
+  }
 }
