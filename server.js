@@ -38,6 +38,8 @@ app.post('/', function(req, res){
         data.doctype = 'XHTML 1.1';
       } else if (doctypes[0].search('xhtml 1.0')) {
         data.doctype = 'XHTML 1.0';
+      } else {
+        data.doctype = 'No HTML version found';
       }
     }
     res.render(__dirname + '/views/index', { data: data });
