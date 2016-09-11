@@ -21,7 +21,8 @@ var data = {
   links_count: 0,
   internal_links: 0,
   external_links: 0,
-  login_form: ''
+  broken_links: 0,
+  login_form: 'No'
 }
 
 // Express requires a view engine
@@ -120,11 +121,28 @@ app.post('/', function(req, res){
       data.internal_links = _.filter($('a'), function(link) { return !isExternal(link) }).length
 
       // Number of broken links
-
+      _.each($('a'), function(link){
+        var url_link = link.attribs.href;
+        if(url_link.indexOf('http') === -1){
+            url_link = 'http:' + url_link;
+        }
+        request(url_link, function(error, response, body){
+          // console.log(response)
+          if(error){
+            console.log(error, 'Error');
+          }else{
+            if(response.statusCode !== 200){
+              data.broken_links++;
+            }
+          }
+          console.log(data.broken_links);
+        //  console.log(response);
+        })
+      })
 
       // Is there a login/signup form
-      if ($('form')) {
-        data.login = "Yes";
+      if ($('input[type="password"]').length > 0) {
+        data.login_form = "Yes";
       }
     }
     res.render(__dirname + '/views/index', { data: data });
