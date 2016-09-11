@@ -9,7 +9,6 @@ var port        = 2016;
 
 var data = {
   error_message: 'Please enter correct URL',
-  status_code: 200,
   doctype: '',
   title: '',
   h1: 0,
@@ -35,7 +34,7 @@ app.use(bodyParser.urlencoded(
 app.use(bodyParser.json());
 
 app.get('/', function(req, res){
-  res.render(__dirname + '/views/index', { data: {} });
+  res.render(__dirname + '/views/index', { data: {}, error: false });
 })
 
 // All user input is stored in the body property of the request object
@@ -43,9 +42,12 @@ app.post('/', function(req, res){
   request(req.body.url, function(error, response, body){
     console.log(req.body.url);
     if (error) {
-      data.status_code = error.statusCode;
-      res.render(__dirname + '/views/index', {data: data});
+      // data.status_code = error.statusCode;
+      res.render(__dirname + '/views/index', {error: true, error_message: error});
     } else {
+      if (response.statusCode !== 200) {
+        res.render(__dirname + '/views/index', {error: true, error_message: 'Status code is ' + response.statusCode})
+    }
 
       // HTML version
       var html = body.toLowerCase();
@@ -139,7 +141,7 @@ app.post('/', function(req, res){
           }
           outstanding_requests--;
           if (outstanding_requests === 0) {
-            res.render(__dirname + '/views/index', { data: data });
+            res.render(__dirname + '/views/index', { error: false, data: data });
             console.log(outstanding_requests);
             console.log('This is the outstanding requests function')
           }
