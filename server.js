@@ -80,8 +80,6 @@ app.post('/', function(req, res){
 
       // External links
       function isExternal(url_input){
-        // console.log(url_input.attribs.href, url.parse(url_input.attribs.href).hostname, 'Debugger \n');
-
         var href_hostname = url.parse(url_input.attribs.href).hostname;
         console.log(href_hostname, 'Original hostname')
         if (href_hostname !== null) {
@@ -115,17 +113,14 @@ app.post('/', function(req, res){
         return href_hostname !== null && href_hostname !== user_hostname;
       }
 
-      // Number of internal and external links
-      var externalLinks = _.filter($('a'), function(link){
-        debugger;
-        if (isExternal(link)) {
-          console.log('External link: ' + link);
-          data.external_links++;
-        } else {
-          console.log('Internal link: ' + link);
-          data.internal_links++;
-        }
-      })
+      // Number of external links
+      data.external_links = _.filter($('a'), isExternal).length;
+
+      // Number of internal links
+      data.internal_links = _.filter($('a'), function(link) { return !isExternal(link) }).length
+
+      // Number of broken links
+
 
       // Is there a login/signup form
       if ($('form')) {
