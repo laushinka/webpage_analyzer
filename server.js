@@ -42,7 +42,7 @@ app.post('/', function(req, res){
   request(req.body.url, function(error, response, body){
     console.log(req.body.url);
     if (error) {
-      data.status_code = response.statusCode;
+      data.status_code = error.statusCode;
       res.render(__dirname + '/views/index', {data: data});
     } else {
 
@@ -109,14 +109,15 @@ app.post('/', function(req, res){
         console.log(user_hostname)
         console.log(url_input.attribs.href)
         console.log(req.body.url)
-        console.log(href_hostname != null )
-        console.log(href_hostname !== user_hostname )
+        console.log(href_hostname != null, 'False means it is null')
+        console.log(href_hostname !== user_hostname, 'False means it is an internal link')
 
         return href_hostname !== null && href_hostname !== user_hostname;
       }
 
       // Number of internal and external links
       var externalLinks = _.filter($('a'), function(link){
+        debugger;
         if (isExternal(link)) {
           console.log('External link: ' + link);
           data.external_links++;
