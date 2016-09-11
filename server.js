@@ -5,6 +5,7 @@ var request     = require('request');
 var cheerio     = require('cheerio');
 var _           = require('lodash');
 const url       = require('url');
+var async       = require('async');
 var port        = 2016;
 
 var data = {
@@ -21,7 +22,8 @@ var data = {
   links_count: 0,
   internal_links: 0,
   external_links: 0,
-  login_form: ''
+  broken_links: 0,
+  login_form: 'No'
 }
 
 // Express requires a view engine
@@ -34,7 +36,7 @@ app.use(bodyParser.urlencoded(
 app.use(bodyParser.json());
 
 app.get('/', function(req, res){
-  res.render(__dirname + '/views/index', { data: {} });
+  res.render(__dirname + '/views/index', { data: {}, error:false });
 })
 
 // All user input is stored in the body property of the request object
@@ -42,10 +44,15 @@ app.post('/', function(req, res){
   request(req.body.url, function(error, response, body){
     console.log(req.body.url);
     if (error) {
-      data.status_code = error.statusCode;
-      res.render(__dirname + '/views/index', {data: data});
+      // data.status_code = error.statusCode;
+      res.render(__dirname + '/views/index', {error: true,error_message: error});
     } else {
-
+      if(response.statusCode !== 200){
+        res.render(__dirname + '/views/index', {error: true,error_message: 'status code is '+response.statusCode});
+        return;
+      }
+/*
+, status_code: response.statusCode*/
       // HTML version
       var html = body.toLowerCase();
       var doctypes = html.match(/<!doctype html(.*?)>/);
@@ -103,12 +110,12 @@ app.post('/', function(req, res){
           }
         }
 
-        console.log(href_hostname)
-        console.log(user_hostname)
-        console.log(url_input.attribs.href)
-        console.log(req.body.url)
-        console.log(href_hostname != null, 'False means it is null')
-        console.log(href_hostname !== user_hostname, 'False means it is an internal link')
+        // console.log(href_hostname)
+        // console.log(user_hostname)
+        // console.log(url_input.attribs.href)
+        // console.log(req.body.url)
+        // console.log(href_hostname != null, 'False means it is null')
+        // console.log(href_hostname !== user_hostname, 'False means it is an internal link')
 
         return href_hostname !== null && href_hostname !== user_hostname;
       }
@@ -120,14 +127,51 @@ app.post('/', function(req, res){
       data.internal_links = _.filter($('a'), function(link) { return !isExternal(link) }).length
 
       // Number of broken links
-
-
-      // Is there a login/signup form
-      if ($('form')) {
-        data.login = "Yes";
+      if ($('input[type="password"]').length > 0) {
+        data.login_form = "Yes";
       }
+      async.eachSeries($('a'), function (link, callback) {
+        var url_link = link.attribs.href;
+        if(url_link.indexOf('http') === -1){
+            url_link = 'http:' + url_link;
+        }
+        request(url_link, function(error, response, body){
+          if(error){
+            console.log(error, 'Error');
+          }else{
+            if(response.statusCode !== 200){
+              data.broken_links++;
+            }
+          }
+          console.log(url_link);
+          console.log(data.broken_links);
+          callback();
+        });
+      }, function done() {
+        res.render(__dirname + '/views/index', {error:false, data: data });
+      });
+//       _.each($('a'), function(link){
+//         var url_link = link.attribs.href;
+//         if(url_link.indexOf('http') === -1){
+//             url_link = 'http:' + url_link;
+//         }
+//         request(url_link, function(error, response, body){
+//           if(error){
+//             console.log(error, 'Error');
+//           }else{
+//             if(response.statusCode !== 200){
+//               data.broken_links++;
+//             }
+//           }
+//           console.log(data.broken_links);
+// //          console.log(response);
+//
+//         })
+//       })
+
     }
-    res.render(__dirname + '/views/index', { data: data });
+              //console.log('render');
+    //res.render(__dirname + '/views/index', { data: data });
   })
 })
 
