@@ -1,6 +1,6 @@
 # Webpage Analyzer
 
-Webpage Analyzer accepts a URL input and outputs the following details:
+Webpage Analyzer accepts a URL input and outputs the following details (pending ones are listed as issues):
 * HTML version
 * Page title
 * Number of headings and which heading level
