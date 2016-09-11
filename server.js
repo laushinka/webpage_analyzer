@@ -77,7 +77,9 @@ app.post('/', function(req, res){
       data.h6 = $('h6').length;
 
       // Number of links
-      data.links_count = $('a').length;
+      var links = $('a');
+      data.links_count = links.length;
+      var outstanding_requests = links.length;
 
       // External links
       function isExternal(url_input){
@@ -121,7 +123,7 @@ app.post('/', function(req, res){
       data.internal_links = _.filter($('a'), function(link) { return !isExternal(link) }).length
 
       // Number of broken links
-      _.each($('a'), function(link){
+      _.each(links, function(link){
         var url_link = link.attribs.href;
         if(url_link.indexOf('http') === -1){
             url_link = 'http:' + url_link;
@@ -135,6 +137,12 @@ app.post('/', function(req, res){
               data.broken_links++;
             }
           }
+          outstanding_requests--;
+          if (outstanding_requests === 0) {
+            res.render(__dirname + '/views/index', { data: data });
+            console.log(outstanding_requests);
+            console.log('This is the outstanding requests function')
+          }
           console.log(data.broken_links);
         //  console.log(response);
         })
@@ -142,11 +150,11 @@ app.post('/', function(req, res){
 
       // Is there a login/signup form
       if ($('input[type="password"]').length > 0) {
+        console.log($('input[type="password"]'));
         data.login_form = "Yes";
       }
     }
-    res.render(__dirname + '/views/index', { data: data });
-  })
+  });
 })
 
 app.listen(port, function(err){
