@@ -7,8 +7,9 @@ var _           = require('lodash');
 const url       = require('url');
 var port        = 2016;
 
+// Data to be rendered in index.ejs
 var data = {
-  error_message: 'Please enter correct URL',
+  error_message: '',
   doctype: '',
   title: '',
   h1: 0,
@@ -110,22 +111,35 @@ app.post('/', function(req, res){
           user_hostname = user_hostname.join('.')
         }
       }
-
-      console.log(href_hostname)
-      console.log(user_hostname)
+      // console.log(href_hostname)
+      // console.log(user_hostname)
       console.log(url_input.attribs.href)
-      console.log(req.body.url)
-      console.log(href_hostname != null, 'False means it is null')
-      console.log(href_hostname !== user_hostname, 'False means it is an internal link')
+      // console.log(req.body.url)
+      // console.log(href_hostname != null, 'False means it is null')
+      // console.log(href_hostname !== user_hostname, 'False means it is an internal link')
 
       return href_hostname !== null && href_hostname !== user_hostname;
     }
 
     // Number of external links
-    data.external_links = _.filter($('a'), isExternal).length;
+    data.external_links = _.filter($('a'), function(link) {
+      if (link) {
+        console.log(link, 'This is link');
+        return isExternal(link)
+      } else {
+        console.log(error, 'Error');
+      }
+    }).length
 
     // Number of internal links
-    data.internal_links = _.filter($('a'), function(link) { return !isExternal(link) }).length
+    data.internal_links = _.filter($('a'), function(link) {
+      if (link) {
+        console.log(link, 'This is link');
+        return !isExternal(link)
+      } else {
+        console.log(error, 'Error');
+      }
+    }).length
 
     // Number of broken links
     _.each(links, function(link){
@@ -155,7 +169,6 @@ app.post('/', function(req, res){
 
     // Is there a login/signup form
     if ($('input[type="password"]').length > 0) {
-      console.log($('input[type="password"]'), 'Password');
       data.login_form = "Yes";
     }
   });
