@@ -89,8 +89,11 @@ app.post('/', function(req, res){
 
     // External links
     function isExternal(url_input){
+      if(!url_input.attribs.href) {
+        return
+      };
       var href_hostname = url.parse(url_input.attribs.href).hostname;
-      console.log(href_hostname, 'Original hostname')
+      console.log(href_hostname, 'Inner link hostname')
       if (href_hostname !== null) {
         href_hostname = href_hostname.split('.');
         var href_length = href_hostname.length
@@ -101,6 +104,7 @@ app.post('/', function(req, res){
         }
       }
       var user_hostname = url.parse(req.body.url).hostname;
+      console.log(user_hostname, 'Original hostname')
       if (user_hostname !== null) {
         user_hostname = user_hostname.split('.');
         var user_length = user_hostname.length
@@ -142,9 +146,13 @@ app.post('/', function(req, res){
 
     // Number of broken links
     _.each(links, function(link){
+      if(!link.attribs.href) {
+        outstanding_requests--;
+        return;
+      };
       var url_link = link.attribs.href;
       if(url_link.indexOf('http') === -1){
-          url_link = 'http:' + url_link;
+          url_link = url.parse(req.body.url).protocol + '//' + url.parse(req.body.url).hostname + url_link;
       }
       request(url_link, function(error, response, body){
         // console.log(response)
