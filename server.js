@@ -40,7 +40,8 @@ app.get('/', function(req, res){
 app.post('/', function(req, res){
   data.broken_links = 0;
   request(req.body.url, function(error, response, body){
-    console.log(req.body.url);
+    console.log('======Starting initial request====')
+    // console.log(response);
     if (error) {
       res.render(__dirname + '/views/index', {error: true, error_message: error});
       return;
@@ -53,7 +54,6 @@ app.post('/', function(req, res){
     // HTML version
     var html = body.toLowerCase();
     var doctypes = html.match(/<!doctype html(.*?)>/);
-    // console.log(doctypes);
     if (doctypes) {
       if (doctypes[0] == '<!doctype html>') {
         data.doctype = 'HTML 5.0';
@@ -91,7 +91,7 @@ app.post('/', function(req, res){
       if (link) {
         return isExternal(link, req.body.url)
       } else {
-        console.log(error, 'Error');
+        console.log(error, 'Error for external link');
       }
     }).length
 
@@ -100,7 +100,7 @@ app.post('/', function(req, res){
       if (link) {
         return !isExternal(link, req.body.url)
       } else {
-        console.log(error, 'Error');
+        console.log(error, 'Error for internal link');
       }
     }).length
 
@@ -125,12 +125,13 @@ app.post('/', function(req, res){
             data.broken_links++;
           }
         }
-        // Render only after outstanding_requests is 0 - to address the asynchrony
+        // Render results only after outstanding_requests is 0 - to address the asynchrony
         outstanding_requests--;
+        console.log(outstanding_requests, 'Number of requests left');
         if (outstanding_requests === 0) {
           res.render(__dirname + '/views/index', { error: false, data: data });
         }
-        console.log(data.broken_links);
+        console.log(data.broken_links, 'Number of broken links');
       })
     })
 
@@ -146,30 +147,36 @@ function isExternal(url_input, original_url){
   if(!url_input.attribs.href) {
     return
   };
-  // Get hostname of inner link
+  // Get/set hostname of inner link
   var href_hostname = url.parse(url_input.attribs.href).hostname;
   console.log(href_hostname, 'Inner link hostname')
   if (href_hostname !== null) {
     href_hostname = href_hostname.split('.');
     var href_length = href_hostname.length
     if (href_length > 2) {
-      href_hostname = href_hostname[href_length-2] + '.' +href_hostname[href_length-1]
+      href_hostname = href_hostname[href_length-2] + '.' + href_hostname[href_length-1]
     } else {
       href_hostname = href_hostname.join('.');
     }
   }
-  // Get hostname of original url
+  // Get/set hostname of original url
   var user_hostname = url.parse(original_url).hostname;
-  console.log(user_hostname, 'Original hostname')
+  console.log(user_hostname, 'Original url hostname')
   if (user_hostname !== null) {
     user_hostname = user_hostname.split('.');
     var user_length = user_hostname.length
     if (user_length > 2) {
-        user_hostname = user_hostname[user_length-2] + '.' +user_hostname[user_length-1]
-    } else {
-      user_hostname = user_hostname.join('.')
+        user_hostname = user_hostname[user_length-2] + '.' + user_hostname[user_length-1]
+    } else if (user_length == 2) {
+      user_hostname = user_hostname.join('.');
     }
   }
+  // console.log(href_hostname, 'Inner link hostname after manipulation')
+  // console.log(user_hostname, 'Original link hostname after manipulation')
+  // console.log(url_input.attribs.href)
+  // console.log(req.body.url)
+  // console.log(href_hostname != null, 'False means it is null')
+  // console.log(href_hostname !== user_hostname, 'False means it is an internal link')
   return href_hostname !== null && href_hostname !== user_hostname;
 }
 
