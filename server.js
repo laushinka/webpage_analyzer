@@ -45,9 +45,10 @@ app.post('/', function(req, res){
     if (error) {
       // data.status_code = error.statusCode;
       res.render(__dirname + '/views/index', {error: true, error_message: error});
+      return;
     }
     if (response.statusCode !== 200) {
-        res.render(__dirname + '/views/index', {error: true,error_message: 'status code is ' + response.statusCode});
+        res.render(__dirname + '/views/index', {error: true,error_message: 'Status code is ' + response.statusCode});
         return;
       }
 
