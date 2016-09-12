@@ -86,42 +86,10 @@ app.post('/', function(req, res){
     data.links_count = links.length;
     var outstanding_requests = links.length;
 
-    // Determine whether an inner link is external or internal
-    function isExternal(url_input){
-      if(!url_input.attribs.href) {
-        return
-      };
-      // Get hostname of inner link
-      var href_hostname = url.parse(url_input.attribs.href).hostname;
-      console.log(href_hostname, 'Inner link hostname')
-      if (href_hostname !== null) {
-        href_hostname = href_hostname.split('.');
-        var href_length = href_hostname.length
-        if (href_length > 2) {
-          href_hostname = href_hostname[href_length-2] + '.' +href_hostname[href_length-1]
-        } else {
-          href_hostname = href_hostname.join('.');
-        }
-      }
-      // Get hostname of original url
-      var user_hostname = url.parse(req.body.url).hostname;
-      console.log(user_hostname, 'Original hostname')
-      if (user_hostname !== null) {
-        user_hostname = user_hostname.split('.');
-        var user_length = user_hostname.length
-        if (user_length > 2) {
-            user_hostname = user_hostname[user_length-2] + '.' +user_hostname[user_length-1]
-        } else {
-          user_hostname = user_hostname.join('.')
-        }
-      }
-      return href_hostname !== null && href_hostname !== user_hostname;
-    }
-
     // Number of external links
     data.external_links = _.filter($('a'), function(link) {
       if (link) {
-        return isExternal(link)
+        return isExternal(link, req.body.url)
       } else {
         console.log(error, 'Error');
       }
@@ -130,7 +98,7 @@ app.post('/', function(req, res){
     // Number of internal links
     data.internal_links = _.filter($('a'), function(link) {
       if (link) {
-        return !isExternal(link)
+        return !isExternal(link, req.body.url)
       } else {
         console.log(error, 'Error');
       }
@@ -172,6 +140,38 @@ app.post('/', function(req, res){
     }
   });
 })
+
+// Determine whether an inner link is external or internal
+function isExternal(url_input, original_url){
+  if(!url_input.attribs.href) {
+    return
+  };
+  // Get hostname of inner link
+  var href_hostname = url.parse(url_input.attribs.href).hostname;
+  console.log(href_hostname, 'Inner link hostname')
+  if (href_hostname !== null) {
+    href_hostname = href_hostname.split('.');
+    var href_length = href_hostname.length
+    if (href_length > 2) {
+      href_hostname = href_hostname[href_length-2] + '.' +href_hostname[href_length-1]
+    } else {
+      href_hostname = href_hostname.join('.');
+    }
+  }
+  // Get hostname of original url
+  var user_hostname = url.parse(original_url).hostname;
+  console.log(user_hostname, 'Original hostname')
+  if (user_hostname !== null) {
+    user_hostname = user_hostname.split('.');
+    var user_length = user_hostname.length
+    if (user_length > 2) {
+        user_hostname = user_hostname[user_length-2] + '.' +user_hostname[user_length-1]
+    } else {
+      user_hostname = user_hostname.join('.')
+    }
+  }
+  return href_hostname !== null && href_hostname !== user_hostname;
+}
 
 app.listen(port, function(err){
   console.log('Running fine on port ' + port);
