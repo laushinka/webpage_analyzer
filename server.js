@@ -54,14 +54,16 @@ app.post('/', function(req, res){
     var html = body.toLowerCase();
     var doctypes = html.match(/<!doctype html(.*?)>/);
     // console.log(doctypes);
-    if (doctypes && doctypes[0] == '<!doctype html>') {
-      data.doctype = 'HTML 5.0';
-    } else if (doctypes[0].search('html 4.01')) {
-      data.doctype = 'HTML 4.01';
-    } else if (doctypes[0].search('xhtml 1.1')) {
-      data.doctype = 'XHTML 1.1';
-    } else if (doctypes[0].search('xhtml 1.0')) {
-      data.doctype = 'XHTML 1.0';
+    if (doctypes) {
+      if (doctypes[0] == '<!doctype html>') {
+        data.doctype = 'HTML 5.0';
+      } else if (doctypes[0].search('html 4.01')) {
+        data.doctype = 'HTML 4.01';
+      } else if (doctypes[0].search('xhtml 1.1')) {
+        data.doctype = 'XHTML 1.1';
+      } else if (doctypes[0].search('xhtml 1.0')) {
+        data.doctype = 'XHTML 1.0';
+      }
     } else {
       data.doctype = 'No HTML version found';
     }
