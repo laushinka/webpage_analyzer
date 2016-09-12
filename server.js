@@ -95,7 +95,6 @@ app.post('/', function(req, res){
         href_hostname = href_hostname.split('.');
         var href_length = href_hostname.length
         if (href_length > 2) {
-          // 012345
           href_hostname = href_hostname[href_length-2] + '.' +href_hostname[href_length-1]
         } else {
           href_hostname = href_hostname.join('.');
