@@ -25,14 +25,12 @@ var data = {
   login_form: 'None'
 }
 
-// Express requires a view engine
 app.set('view engine', 'ejs');
 
 // Parse all incoming requests before executing the other HTTP requests below
 app.use(bodyParser.urlencoded(
-  {extended: false}
+  {extended: true}
 ));
-app.use(bodyParser.json());
 
 app.get('/', function(req, res){
   res.render(__dirname + '/views/index', { data: {}, error: false });
@@ -43,7 +41,6 @@ app.post('/', function(req, res){
   request(req.body.url, function(error, response, body){
     console.log(req.body.url);
     if (error) {
-      // data.status_code = error.statusCode;
       res.render(__dirname + '/views/index', {error: true, error_message: error});
       return;
     }
@@ -88,11 +85,12 @@ app.post('/', function(req, res){
     data.links_count = links.length;
     var outstanding_requests = links.length;
 
-    // External links
+    // Determine whether an inner link is external or internal
     function isExternal(url_input){
       if(!url_input.attribs.href) {
         return
       };
+      // Get hostname of inner link
       var href_hostname = url.parse(url_input.attribs.href).hostname;
       console.log(href_hostname, 'Inner link hostname')
       if (href_hostname !== null) {
@@ -104,6 +102,7 @@ app.post('/', function(req, res){
           href_hostname = href_hostname.join('.');
         }
       }
+      // Get hostname of original url
       var user_hostname = url.parse(req.body.url).hostname;
       console.log(user_hostname, 'Original hostname')
       if (user_hostname !== null) {
@@ -115,20 +114,12 @@ app.post('/', function(req, res){
           user_hostname = user_hostname.join('.')
         }
       }
-      // console.log(href_hostname)
-      // console.log(user_hostname)
-      console.log(url_input.attribs.href)
-      // console.log(req.body.url)
-      // console.log(href_hostname != null, 'False means it is null')
-      // console.log(href_hostname !== user_hostname, 'False means it is an internal link')
-
       return href_hostname !== null && href_hostname !== user_hostname;
     }
 
     // Number of external links
     data.external_links = _.filter($('a'), function(link) {
       if (link) {
-        console.log(link, 'This is link');
         return isExternal(link)
       } else {
         console.log(error, 'Error');
@@ -138,7 +129,6 @@ app.post('/', function(req, res){
     // Number of internal links
     data.internal_links = _.filter($('a'), function(link) {
       if (link) {
-        console.log(link, 'This is link');
         return !isExternal(link)
       } else {
         console.log(error, 'Error');
@@ -152,11 +142,12 @@ app.post('/', function(req, res){
         return;
       };
       var url_link = link.attribs.href;
+      // Concat protocol and hostname if url is incomplete
       if(url_link.indexOf('http') === -1){
           url_link = url.parse(req.body.url).protocol + '//' + url.parse(req.body.url).hostname + url_link;
       }
+      // Make get requests to each link
       request(url_link, function(error, response, body){
-        // console.log(response)
         if(error){
           console.log(error, 'Error');
         }else{
@@ -164,14 +155,12 @@ app.post('/', function(req, res){
             data.broken_links++;
           }
         }
+        // Render only after outstanding_requests is 0 - to address the asynchrony
         outstanding_requests--;
         if (outstanding_requests === 0) {
           res.render(__dirname + '/views/index', { error: false, data: data });
-          console.log(outstanding_requests);
-          console.log('This is the outstanding requests function')
         }
         console.log(data.broken_links);
-      //  console.log(response);
       })
     })
 
