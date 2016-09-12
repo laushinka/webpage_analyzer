@@ -48,9 +48,9 @@ app.post('/', function(req, res){
       return;
     }
     if (response.statusCode !== 200) {
-        res.render(__dirname + '/views/index', {error: true,error_message: 'Status code is ' + response.statusCode});
-        return;
-      }
+      res.render(__dirname + '/views/index', {error: true,error_message: 'Status code is ' + response.statusCode});
+      return;
+    }
 
     // HTML version
     var html = body.toLowerCase();
