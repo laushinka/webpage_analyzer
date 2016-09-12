@@ -22,7 +22,7 @@ var data = {
   internal_links: 0,
   external_links: 0,
   broken_links: 0,
-  login_form: 'No'
+  login_form: 'None'
 }
 
 // Express requires a view engine
@@ -177,7 +177,7 @@ app.post('/', function(req, res){
 
     // Is there a login/signup form
     if ($('input[type="password"]').length > 0) {
-      data.login_form = "Yes";
+      data.login_form = "Available";
     }
   });
 })
