@@ -38,6 +38,7 @@ app.get('/', function(req, res){
 
 // All user input is stored in the body property of the request object
 app.post('/', function(req, res){
+  data.broken_links = 0;
   request(req.body.url, function(error, response, body){
     console.log(req.body.url);
     if (error) {
@@ -151,7 +152,8 @@ app.post('/', function(req, res){
         if(error){
           console.log(error, 'Error');
         }else{
-          if(response.statusCode !== 200){
+          if(response.statusCode === 404){
+            console.log(url_link);
             data.broken_links++;
           }
         }
