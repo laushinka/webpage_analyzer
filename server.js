@@ -97,7 +97,7 @@ app.post('/', function(req, res){
         outstanding_requests--;
         return;
       };
-      var url_link = link.attribs.href.startsWith('http:') ? link.attribs.href : 'http:' + link.attribs.href;
+      var url_link = link.attribs.href
 
       request(url_link, function(error, response, body){
         if(error){
