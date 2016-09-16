@@ -104,16 +104,14 @@ app.post('/', function(req, res){
         return;
       };
       var url_link = link.attribs.href;
-      // Concat protocol and hostname if url is incomplete
-      if(url_link.indexOf('http') === -1){
-          url_link = url.parse(req.body.url).protocol + '//' + url.parse(req.body.url).hostname + url_link;
-      }
-      // Make get requests to each link
+
       request(url_link, function(error, response, body){
         if(error){
           console.log(error, 'Error');
         }else{
           if(response.statusCode === 404){
+            console.log('++++++++++++++++++++++ResponseBrokenLink+++++++++++++++++++')
+            console.log(response.statusCode);
             console.log(url_link);
             data.broken_links++;
           }
