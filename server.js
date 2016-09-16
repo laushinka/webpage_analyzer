@@ -40,8 +40,6 @@ app.get('/', function(req, res){
 app.post('/', function(req, res){
   data.broken_links = 0;
   request(req.body.url, function(error, response, body){
-    console.log('======Starting initial request====')
-    // console.log(response);
     if (error) {
       res.render(__dirname + '/views/index', {error: true, error_message: error});
       return;
@@ -87,21 +85,13 @@ app.post('/', function(req, res){
     var outstanding_requests = links.length;
 
     // Number of external links
-    data.external_links = _.filter($('a'), function(link) {
-      if (link) {
-        return isExternal(link, req.body.url)
-      } else {
-        console.log(error, 'Error for external link');
-      }
+    data.external_links = _.filter(links, function(link) {
+      return isExternal(link, req.body.url)
     }).length
 
     // Number of internal links
-    data.internal_links = _.filter($('a'), function(link) {
-      if (link) {
-        return !isExternal(link, req.body.url)
-      } else {
-        console.log(error, 'Error for internal link');
-      }
+    data.internal_links = _.filter(links, function(link) {
+      return !isExternal(link, req.body.url)
     }).length
 
     // Number of broken links
