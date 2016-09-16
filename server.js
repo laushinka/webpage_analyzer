@@ -72,12 +72,15 @@ app.post('/', function(req, res){
     data.title = _.upperFirst($('title').text());
 
     // Page headings
-    data.h1 = $('h1').length;
-    data.h2 = $('h2').length;
-    data.h3 = $('h3').length;
-    data.h4 = $('h4').length;
-    data.h5 = $('h5').length;
-    data.h6 = $('h6').length;
+    // data.h1 = $('h1').length;
+    // data.h2 = $('h2').length;
+    // data.h3 = $('h3').length;
+    // data.h4 = $('h4').length;
+    // data.h5 = $('h5').length;
+    // data.h6 = $('h6').length;
+    for (var i = 1; i <= 6; i++) {
+      data['h'+i] = $('h'+i).length;
+    }
 
     // Number of links
     var links = $('a');
