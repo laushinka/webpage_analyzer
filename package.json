@@ -25,5 +25,7 @@
     "lodash": "^4.15.0",
     "request": "^2.74.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "mocha": "^3.0.2"
+  }
 }
