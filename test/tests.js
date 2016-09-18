@@ -1,6 +1,11 @@
+var server = require('../server.js');
 var assert = require('assert');
-describe('Foo', function() {
-  it('Outputs something', function() {
-    assert.equal(1, 2);
-  })
-})
+
+describe('checkHtml', function() {
+  it('Extracts the HTML version', function() {
+    let html = '<!DOCTYPE html>';
+    let result = server.checkHtml(html);
+    assert.equal(result.version, 'HTML 5.0');
+  });
+  it('Informs missing doctype');
+});

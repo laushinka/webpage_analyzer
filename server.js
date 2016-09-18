@@ -25,6 +25,17 @@ var data = {
   login_form: 'None'
 }
 
+function checkHtml(html) {
+  let result = {};
+  let doctypes = html.toLowerCase().match(/<!doctype html(.*?)>/);
+  if (doctypes) {
+    if (doctypes[0] == '<!doctype html>') {
+      result.version = 'HTML 5.0';
+    }
+  }
+  return result
+}
+
 app.set('view engine', 'ejs');
 
 // Parse all incoming requests before executing the other HTTP requests below
@@ -158,3 +169,5 @@ function isExternal(url_input, original_url){
 app.listen(port, function(err){
   console.log('Running fine on port ' + port);
 })
+
+module.exports = {checkHtml: checkHtml};
