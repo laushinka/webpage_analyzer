@@ -32,9 +32,13 @@ function checkHtml(html) {
     let doctype = doctypes[0];
     if (doctype == '<!doctype html>') {
       result.version = 'HTML 5.0';
-    } else if (doctype.search('html 4.01')) {
+    } else if (doctype.search('html 4.01') >= 0) {
       result.version = 'HTML 4.01';
+    } else {
+      result.version = 'HTML version unrecognized';
     }
+  } else {
+    result.version = 'No doctype found';
   }
   return result
 }

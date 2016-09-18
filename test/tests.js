@@ -12,5 +12,14 @@ describe('checkHtml', function() {
     let result = server.checkHtml(html);
     assert.equal(result.version, 'HTML 4.01');
   });
-  it('Informs missing doctype');
+  it('Informs unrecognized version', function() {
+    let html = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 2.5 Transitional//EN">';
+    let result = server.checkHtml(html);
+    assert.equal(result.version, 'HTML version unrecognized');
+  });
+  it('Informs missing doctype', function() {
+    let html = '';
+    let result = server.checkHtml(html);
+    assert.equal(result.version, 'No doctype found');
+  });
 });
