@@ -29,8 +29,11 @@ function checkHtml(html) {
   let result = {};
   let doctypes = html.toLowerCase().match(/<!doctype html(.*?)>/);
   if (doctypes) {
-    if (doctypes[0] == '<!doctype html>') {
+    let doctype = doctypes[0];
+    if (doctype == '<!doctype html>') {
       result.version = 'HTML 5.0';
+    } else if (doctype.search('html 4.01')) {
+      result.version = 'HTML 4.01';
     }
   }
   return result
