@@ -22,64 +22,9 @@
 
       <div class="row">
         <div class="col-md-6">
-          <% if(!error) {%>
-            <table class="table">
-              <tr>
-                <td>HTML version</td>
-                <td><%= data.doctype %></td>
-              </tr>
-              <tr>
-                <td>Title</td>
-                <td><%= data.title %></td>
-              </tr>
-              <tr>
-                <td>H1</td>
-                <td><%= data.h1 %></td>
-              </tr>
-              <tr>
-                <td>H2</td>
-                <td><%= data.h2 %></td>
-              </tr>
-              <tr>
-                <td>H3</td>
-                <td><%= data.h3 %></td>
-              </tr>
-              <tr>
-                <td>H4</td>
-                <td><%= data.h4 %></td>
-              </tr>
-              <tr>
-                <td>H5</td>
-                <td><%= data.h5 %></td>
-              </tr>
-              <tr>
-                <td>H6</td>
-                <td><%= data.h6 %></td>
-              </tr>
-              <tr>
-                <td>Number of total links</td>
-                <td><%= data.links_count %></td>
-              </tr>
-              <tr>
-                <td>Number of internal links</td>
-                <td><%= data.internal_links %></td>
-              </tr>
-              <tr>
-                <td>Number of external links</td>
-                <td><%= data.external_links %></td>
-              </tr>
-              <tr>
-                <td>Number of broken links</td>
-                <td><%= data.broken_links %></td>
-              </tr>
-              <tr>
-                <td>Login/signup form</td>
-                <td><%= data.login_form %></td>
-              </tr>
-            </table>
-          <% } else {%>
-            <h3><%= error_message %></h3>
-            <% } %>
+          <% if(stats) { %>
+            <%= stats.url %>
+          <% } %>
         </div>
       </div>
     </div>

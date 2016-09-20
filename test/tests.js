@@ -1,4 +1,6 @@
 var server = require('../server.js');
+var chai = require('chai');
+var expect = chai.expect;
 var assert = require('assert');
 
 describe('checkHtml', function() {
@@ -23,3 +25,11 @@ describe('checkHtml', function() {
     assert.equal(result.version, 'No doctype found');
   });
 });
+
+describe('renderPageStats', function() {
+  it('Renders the HTML version', function() {
+    let stats = {version: 'foo'};
+    let html = server.renderPageStats(stats);
+    expect(html).to.include('blah')
+  })
+})
