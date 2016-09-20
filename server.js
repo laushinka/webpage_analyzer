@@ -4,6 +4,7 @@ var bodyParser  = require('body-parser');
 var request     = require('request');
 var cheerio     = require('cheerio');
 var _           = require('lodash');
+var async       = require('async');
 const url       = require('url');
 var port        = 2016;
 
@@ -56,7 +57,6 @@ app.get('/', function(req, res){
 
 // All user input is stored in the body property of the request object
 app.post('/', function(req, res){
-  data.broken_links = 0;
   request(req.body.url, function(error, response, body){
     if (error) {
       res.render(__dirname + '/views/index', {error: true, error_message: error});
@@ -97,7 +97,6 @@ app.post('/', function(req, res){
     // Number of links
     var links = $('a');
     data.links_count = links.length;
-    var outstanding_requests = links.length;
 
     // Number of external links
     data.external_links = _.filter(links, function(link) {
@@ -110,30 +109,28 @@ app.post('/', function(req, res){
     }).length
 
     // Number of broken links
-    _.each(links, function(link){
+    async.eachSeries(links, function(link, callback){
       if(!link.attribs.href) {
-        outstanding_requests--;
         return;
       };
       var url_link = link.attribs.href
 
       request(url_link, function(error, response, body){
-        if(error){
+        if (error) {
           console.log(error, 'Error');
-        }else{
-          if(response.statusCode === 404){
+        } else {
+          if (response.statusCode === 404) {
             data.broken_links++;
+          } else {
+            console.log('Status code of ' + url_link + ' is: ', response.statusCode);
           }
         }
-        // Render results only after outstanding_requests is 0 - to address the asynchrony
-        outstanding_requests--;
-        console.log(outstanding_requests, 'Number of requests left');
-        if (outstanding_requests === 0) {
-          res.render(__dirname + '/views/index', { error: false, data: data });
-        }
-        console.log(data.broken_links, 'Number of broken links');
-      })
-    })
+        console.log('Number of broken links: ', data.broken_links)
+        callback();
+      });
+    }, function done() {
+      res.render(__dirname + '/views/index', { error: false, data: data });
+    });
 
     // Is there a login/signup form
     if ($('input[type="password"]').length > 0) {
