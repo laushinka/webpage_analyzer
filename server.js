@@ -26,24 +26,6 @@ var data = {
   login_form: 'None'
 }
 
-function checkHtml(html) {
-  let result = {};
-  let doctypes = html.toLowerCase().match(/<!doctype html(.*?)>/);
-  if (doctypes) {
-    let doctype = doctypes[0];
-    if (doctype == '<!doctype html>') {
-      result.version = 'HTML 5.0';
-    } else if (doctype.search('html 4.01') >= 0) {
-      result.version = 'HTML 4.01';
-    } else {
-      result.version = 'HTML version unrecognized';
-    }
-  } else {
-    result.version = 'No doctype found';
-  }
-  return result
-}
-
 app.set('view engine', 'ejs');
 
 // Parse all incoming requests before executing the other HTTP requests below
@@ -73,11 +55,11 @@ app.post('/', function(req, res){
     if (doctypes) {
       if (doctypes[0] == '<!doctype html>') {
         data.doctype = 'HTML 5.0';
-      } else if (doctypes[0].search('html 4.01')) {
+      } else if (doctypes[0].search('html 4.01') >= 0) {
         data.doctype = 'HTML 4.01';
-      } else if (doctypes[0].search('xhtml 1.1')) {
+      } else if (doctypes[0].search('xhtml 1.1') >= 0) {
         data.doctype = 'XHTML 1.1';
-      } else if (doctypes[0].search('xhtml 1.0')) {
+      } else if (doctypes[0].search('xhtml 1.0') >= 0) {
         data.doctype = 'XHTML 1.0';
       }
     } else {
@@ -122,7 +104,7 @@ app.post('/', function(req, res){
           if (response.statusCode === 404) {
             data.broken_links++;
           } else {
-            console.log('Status code of ' + url_link + ' is: ', response.statusCode);
+            console.log('Status code of ' + url_link + ' is:', response.statusCode);
           }
         }
         console.log('Number of broken links: ', data.broken_links)
@@ -173,5 +155,3 @@ function isExternal(url_input, original_url){
 app.listen(port, function(err){
   console.log('Running fine on port ' + port);
 })
-
-module.exports = {checkHtml: checkHtml};
