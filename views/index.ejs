@@ -13,15 +13,22 @@
         </div>
 
         <div class="col-md-6">
-          <form action="/" method="POST">
-            <input class="form-control" placeholder="Example: http://wikipedia.org" type="text" name="url">
-            <input type="submit">
+          <form action="/" id="form" method="POST">
+              <div class="input-group">
+                  <input type="text" class="form-control" name="url" placeholder="Example: http://wikipedia.org">
+                  <span class="input-group-btn">
+                    <button class="btn btn-default" id="submit-btn" type="submit">Submit</button>
+                  </span>
+                </div>
+            
           </form>
         </div>
       </div>
 
       <div class="row">
+          
         <div class="col-md-6">
+            
           <% if(!error) {%>
             <table class="table">
               <tr>
@@ -83,5 +90,10 @@
         </div>
       </div>
     </div>
+    <script>
+        document.getElementById('form').addEventListener('submit', function(e){
+            document.getElementById("submit-btn").innerHTML = '<img height="20" src="http://schoolofdata.scoda.okfn.org/wp-content/plugins/embed-facebook/slidewindow/loading.gif"/>'
+        });
+    </script>
   </body>
 </html>
