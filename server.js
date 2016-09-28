@@ -39,8 +39,9 @@ app.get('/', function(req, res){
 
 // All user input is stored in the body property of the request object
 app.post('/', function(req, res){
-  request(req.body.url, function(error, response, body){
+  request(req.body.url, { timeout: 10000 },function(error, response, body){
     if (error) {
+      if (error.code == 'ETIMEDOUT') error = "Request timeout.";
       res.render(__dirname + '/views/index', {error: true, error_message: error});
       return;
     }
